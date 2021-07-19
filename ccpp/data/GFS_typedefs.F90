@@ -792,6 +792,8 @@ module GFS_typedefs
     real(kind=kind_phys) :: ttendlim        !< temperature tendency limiter per time step in K/s
     logical              :: ext_diag_thompson !< flag for extended diagnostic output from Thompson
     integer              :: thompson_ext_ndiag3d=37 !< number of 3d arrays for extended diagnostic output from Thompson
+    logical              :: sedisemi !< flag for SL rain sedimentation 
+    logical              :: sedi_semi_update !< flag for SL rain sedimentation update             
 
     !--- GFDL microphysical paramters
     logical              :: lgfdlmprad      !< flag for GFDL mp scheme and radiation consistency
@@ -3168,6 +3170,8 @@ module GFS_typedefs
     real(kind=kind_phys) :: nsradar_reset  = -999.0             !< seconds between resetting radar reflectivity calculation, set to <0 for every time step
     real(kind=kind_phys) :: ttendlim       = -999.0             !< temperature tendency limiter, set to <0 to deactivate
     logical              :: ext_diag_thompson = .false.         !< flag for extended diagnostic output from Thompson
+    logical              :: sedisemi = .false.                  !< flag for SL rain sedimentation                    
+    logical              :: sedi_semi_update = .false.          !< flag for SL rain sedimentation update                                     
 
     !--- GFDL microphysical parameters
     logical              :: lgfdlmprad     = .false.            !< flag for GFDLMP radiation interaction
@@ -3520,7 +3524,7 @@ module GFS_typedefs
                                mg_ncnst, mg_ninst, mg_ngnst, sed_supersat, do_sb_physics,   &
                                mg_alf,   mg_qcmin, mg_do_ice_gmao, mg_do_liq_liu,           &
                                ltaerosol, lradar, nsradar_reset, lrefres, ttendlim,         &
-                               ext_diag_thompson, lgfdlmprad,                               &
+                               ext_diag_thompson, sedisemi, sedi_semi_update, lgfdlmprad,   &
                           !--- max hourly
                                avg_max_length,                                              &
                           !--- land/surface model control
@@ -3956,6 +3960,10 @@ module GFS_typedefs
     Model%nsradar_reset    = nsradar_reset
     Model%ttendlim         = ttendlim
     Model%ext_diag_thompson= ext_diag_thompson
+    Model%sedisemi         = sedisemi
+    Model%sedi_semi_update = sedi_semi_update
+
+
 
 !--- F-A MP parameters
     Model%rhgrd            = rhgrd
@@ -4779,6 +4787,8 @@ module GFS_typedefs
                                           ' ltaerosol = ',Model%ltaerosol, &
                                           ' ttendlim =',Model%ttendlim, &
                                           ' ext_diag_thompson =',Model%ext_diag_thompson, &
+                                          ' sedisemi =',Model%sedisemi, &                                             
+                                          ' sedi_semi_update =',Model%sedi_semi_update, &                                 
                                           ' effr_in =',Model%effr_in, &
                                           ' lradar =',Model%lradar, &
                                           ' nsradar_reset =',Model%nsradar_reset, &
@@ -5191,6 +5201,8 @@ module GFS_typedefs
         print *, ' lrefres           : ', Model%lrefres
         print *, ' ttendlim          : ', Model%ttendlim
         print *, ' ext_diag_thompson : ', Model%ext_diag_thompson
+        print *, ' sedisemi          : ', Model%sedisemi
+        print *, ' sedi_semi_update  : ', Model%sedi_semi_update
         print *, ' '
       endif
       if (Model%imp_physics == Model%imp_physics_mg) then
