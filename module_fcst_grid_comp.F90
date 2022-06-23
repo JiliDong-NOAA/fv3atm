@@ -224,6 +224,8 @@ if (rc /= ESMF_SUCCESS) write(0,*) 'rc=',rc,__FILE__,__LINE__; if(ESMF_LogFoundE
 
     ! - Create coordinate arrays around allocations held within Atmos data structure and set in Grid
 
+! jdong
+  if (2 == 1) then
     call ESMF_GridGet(grid, staggerloc=ESMF_STAGGERLOC_CENTER, distgrid=distgrid, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, line=__LINE__, file=__FILE__)) return
 
@@ -253,6 +255,22 @@ if (rc /= ESMF_SUCCESS) write(0,*) 'rc=',rc,__FILE__,__LINE__; if(ESMF_LogFoundE
 
     call ESMF_GridSetCoord(grid, coordDim=2, staggerLoc=ESMF_STAGGERLOC_CORNER, array=array, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, line=__LINE__, file=__FILE__)) return
+
+  end if ! jdong
+
+          do tl=1,6
+              decomptile(1,tl) = layout(1)
+              decomptile(2,tl) = layout(2)
+              decompflagPTile(:,tl) = (/ESMF_DECOMP_SYMMEDGEMAX,ESMF_DECOMP_SYMMEDGEMAX/)               
+          enddo
+
+          grid = ESMF_GridCreateMosaic(filename="INPUT/grid_spec.nc",                                        &                
+                                             regDecompPTile=decomptile,tileFilePath="INPUT/",                     &                
+                                             decompflagPTile=decompflagPTile,                                     &                
+                                             staggerlocList=(/ESMF_STAGGERLOC_CENTER,ESMF_STAGGERLOC_CORNER/),    &  
+                                             name='fcst_grid', rc=rc)
+          if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU,line=__LINE__, file=__FILE__)) return               
+
 
     !TODO: Consider aligning mask treatment with coordinates... especially if it requires updates for moving
     call addLsmask2grid(grid, rc=rc)
@@ -532,6 +550,10 @@ if (rc /= ESMF_SUCCESS) write(0,*) 'rc=',rc,__FILE__,__LINE__; if(ESMF_LogFoundE
                                      Time_restart, Time_step_restart
     type(time_type)               :: iautime
     integer                       :: io_unit, calendar_type_res, date_res(6), date_init_res(6)
+    integer,dimension(2,6):: decomptile                  !define delayout for the 6 cubed-sphere tiles   
+    type(ESMF_Decomp_Flag):: decompflagPTile(2,6)
+    integer                       :: tl
+
 
     integer,allocatable           :: grid_number_on_all_pets(:)
     logical,allocatable           :: is_moving_on_all_pets(:), is_moving(:)
@@ -799,6 +821,10 @@ if (rc /= ESMF_SUCCESS) write(0,*) 'rc=',rc,__FILE__,__LINE__; if(ESMF_LogFoundE
       deallocate(is_moving)
 
       allocate (fcstGridComp(ngrids))
+
+      if (mpp_pe() == mpp_root_pe()) &
+      write(*, *) 'create fcst grid: mype,regional,ngrids,mygrid=',mype,Atmos%regional,ngrids,mygrid   
+
       do n=1,ngrids
 
         pelist => null()
