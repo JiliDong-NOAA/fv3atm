@@ -1008,6 +1008,7 @@ module GFS_typedefs
     logical              :: hurr_pbl        !< flag for hurricane-specific options in PBL scheme
     logical              :: lheatstrg       !< flag for canopy heat storage parameterization
     logical              :: lseaspray       !< flag for sea spray parameterization
+    logical              :: lidealland      !< flag to set land sfc for idealized exp   
     logical              :: cnvcld
     logical              :: random_clds     !< flag controls whether clouds are random
     logical              :: shal_cnv        !< flag for calling shallow convection
@@ -3183,6 +3184,7 @@ module GFS_typedefs
     logical              :: hurr_pbl       = .false.                  !< flag for hurricane-specific options in PBL scheme
     logical              :: lheatstrg      = .false.                  !< flag for canopy heat storage parameterization
     logical              :: lseaspray      = .false.                  !< flag for sea spray parameterization
+    logical              :: lidealland     = .false.                  !< flag for land sfc of ideal exp   
     logical              :: cnvcld         = .false.
     logical              :: random_clds    = .false.                  !< flag controls whether clouds are random
     logical              :: shal_cnv       = .false.                  !< flag for calling shallow convection
@@ -3519,7 +3521,7 @@ module GFS_typedefs
                                h2o_phys, pdfcld, shcnvcw, redrag, hybedmf, satmedmf,        &
                                shinhong, do_ysu, dspheat, lheatstrg, lseaspray, cnvcld,     &
                                random_clds, shal_cnv, imfshalcnv, imfdeepcnv, isatmedmf,    &
-                               do_deep, jcap,                                               &
+                               do_deep, jcap, lidealland,                                   &
                                cs_parm, flgmin, cgwf, ccwf, cdmbgwd, sup, ctei_rm, crtrh,   &
                                dlqf, rbcr, shoc_parm, psauras, prauras, wminras,            &
                                do_sppt, do_shum, do_skeb,                                   &
@@ -4209,6 +4211,7 @@ module GFS_typedefs
     Model%hurr_pbl          = hurr_pbl
     Model%lheatstrg         = lheatstrg
     Model%lseaspray         = lseaspray
+    Model%lidealland        = lidealland
     Model%cnvcld            = cnvcld
     Model%random_clds       = random_clds
     Model%shal_cnv          = shal_cnv
@@ -5938,6 +5941,7 @@ module GFS_typedefs
       print *, ' dspheat           : ', Model%dspheat
       print *, ' lheatstrg         : ', Model%lheatstrg
       print *, ' lseaspray         : ', Model%lseaspray
+      print *, ' lidealland        : ', Model%lidealland
       print *, ' cnvcld            : ', Model%cnvcld
       print *, ' random_clds       : ', Model%random_clds
       print *, ' shal_cnv          : ', Model%shal_cnv
